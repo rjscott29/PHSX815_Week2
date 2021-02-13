@@ -6,14 +6,23 @@ import numpy as np
 
 # import our Random class from python/Random.py file
 sys.path.append(".")
-from python.Random import Random
+from Random import Random
 
 # main function for our coin toss Python code
 if __name__ == "__main__":
     # if the user includes the flag -h or --help print the options
     if '-h' in sys.argv or '--help' in sys.argv:
-        print ("Usage: %s [-seed number]" % sys.argv[0])
-        print
+        print ("Usage: %s [-options]" % sys.argv[0])
+        print ("  options:")
+        print ("   --help(-h)          print options")
+        print ("   -seed [number]      change seed")
+        print ("   -prob [number]      name of file for H1 data")
+        print ("   -Ntoss [number]     number of tosses in Nexp")
+        print ("   -Nexp [number]      number of experiments for Ntoss")
+        print ("   -output [text]      name of file for output data")
+        print ("   -b                  run Bernoulli (default)")
+        print ("   -e                  run Exponential")
+        print ("   -d                  run Diceroll")
         sys.exit(1)
 
     # default seed
@@ -27,6 +36,9 @@ if __name__ == "__main__":
 
     # default number of experiments
     Nexp = 1
+    
+    # default number of sides
+    sides = 20
 
     # output file defaults
     doOutputFile = False
@@ -50,24 +62,61 @@ if __name__ == "__main__":
         Ne = int(sys.argv[p+1])
         if Ne > 0:
             Nexp = Ne
+    if '-sides' in sys.argv:
+        p = sys.argv.index('-sides')
+        stemp = int(sys.argv[p+1])
+        if stemp > 0 and stemp % 1 == 0:
+            sides = stemp
+    # assigns distribution from sys.argv
+    Bern = '-b' in sys.argv
+    Exp = '-e' in sys.argv
+    Dice = '-d' in sys.argv
+    # default distribution
+    Bern = not (Exp or Dice)
     if '-output' in sys.argv:
         p = sys.argv.index('-output')
         OutputFileName = sys.argv[p+1]
         doOutputFile = True
+
+
 
     # class instance of our Random class using seed
     random = Random(seed)
 
     if doOutputFile:
         outfile = open(OutputFileName, 'w')
-        for e in range(0,Nexp):
-            for t in range(0,Ntoss):
-                outfile.write(str(random.Bernoulli(prob))+" ")
-            outfile.write(" \n")
+        if Bern:
+            for e in range(0,Nexp):
+                for t in range(0,Ntoss):
+                    outfile.write(str(random.Bernoulli(prob))+" ")
+                outfile.write(" \n")
+        if Exp:
+            for e in range(0,Nexp):
+                for t in range(0,Ntoss):
+                    outfile.write(str(random.Exponential())+" ")
+                outfile.write(" \n")
+        if Dice:
+            for e in range(0,Nexp):
+                for t in range(0,Ntoss):
+                    outfile.write(str(random.Diceroll(sides))+" ")
+                outfile.write(" \n")
         outfile.close()
     else:
-        for e in range(0,Nexp):
-            for t in range(0,Ntoss):
-                print(random.Bernoulli(prob), end=' ')
-            print(" ")
-   
+        if Bern:
+            print("---Bernoulli---\n")
+            for e in range(0,Nexp):
+                for t in range(0,Ntoss):
+                    print(str(random.Bernoulli(prob))+" ")
+                print(" \n")
+        if Exp:
+            print("---Exponential---\n")
+            for e in range(0,Nexp):
+                for t in range(0,Ntoss):
+                    print(str(random.Exponential())+" ")
+                print(" \n")
+        if Dice:
+            print("---Diceroll---\n")
+            for e in range(0,Nexp):
+                for t in range(0,Ntoss):
+                    print(str(random.Diceroll(sides))+" ")
+                print(" \n") 

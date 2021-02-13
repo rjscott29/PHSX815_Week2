@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import numpy as np
+import math
 
 #################
 # Random class
@@ -63,6 +64,18 @@ class Random:
       while R <= 0.:
         R = self.rand()
 
-      X = -log(R)/beta
+      X = -np.log(R)/beta
 
       return X
+  
+    # function returns a random integer [1,N] analogous to a N sided dice roll
+    def Diceroll(self, N=20):
+        R = self.rand()
+                
+        # R gives value between 0 and 1, make sure it's not less than 0.
+        while R <=0.:
+            R = self.rand()
+
+        Y = math.ceil(R*N)
+        
+        return Y
